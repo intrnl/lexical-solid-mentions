@@ -1,0 +1,7 @@
+dist/
+node_modules/
+
+pnpm-lock.yaml
+
+/src/router-routes.ts
+/src/router.ts

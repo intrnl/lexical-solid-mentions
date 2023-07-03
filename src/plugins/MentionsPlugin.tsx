@@ -1,7 +1,7 @@
 import { For, Show, createMemo, createResource, createSignal } from 'solid-js';
 import { Portal } from 'solid-js/web';
 
-import { TextNode } from 'lexical';
+import { $createTextNode, TextNode } from 'lexical';
 
 import { useLexicalComposerContext } from 'lexical-solid/LexicalComposerContext';
 import { LexicalTypeaheadMenuPlugin, QueryMatch } from 'lexical-solid/LexicalTypeaheadMenuPlugin';
@@ -91,18 +91,26 @@ const MentionsPlugin = () => {
 
 	const onSelectOption = (
 		option: MentionTypeaheadOption,
-		replace: TextNode | null,
+		replaceNode: TextNode | null,
 		closeMenu: () => void,
 	) => {
 		editor.update(() => {
 			const data = option.data;
 			const node = $createMentionNode(data.did, '@' + data.handle);
 
-			if (replace) {
-				replace.replace(node);
+			if (replaceNode) {
+				replaceNode.replace(node);
 			}
 
-			node.select();
+			if (node.canInsertTextAfter()) {
+				const ws = $createTextNode(' ');
+
+				node.insertAfter(ws);
+				ws.select();
+			} else {
+				node.select();
+			}
+
 			closeMenu();
 		});
 	};
